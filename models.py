@@ -1,13 +1,3 @@
-# from pydantic import BaseModel, Field
-# from datetime import date
-
-
-# class UserText(BaseModel):
-#     text: str
-
-# class UserTextTranslate(BaseModel):
-#     text: str
-
 # Importa bibliotecas
 import torch
 from transformers import (
@@ -25,10 +15,13 @@ import os
 from pathlib import Path
 
 device = torch.device(
-"cuda" if torch.cuda.is_available() else "cpu"
+    "cuda" if torch.cuda.is_available() else "cpu"
 )
 
-
+################################### PARTE 1 ###################################
+# ------------------------------------------------------------------------------
+# Questão 1
+# ------------------------------------------------------------------------------
 # Função para gerar texto usando o modelo openai-community/gpt2
 pipe = pipeline(
 "text-generation",
@@ -54,6 +47,9 @@ def generate_text(text: str) -> str:
     )
     return resultado[0]["generated_text"]
 
+# ------------------------------------------------------------------------------
+# Questão 2
+# ------------------------------------------------------------------------------
 # Função para traduzir texto do ingês para o frances usando o modelo Helsinki-NLP/opus-mt-en-fr
 translation_model_id = "Helsinki-NLP/opus-mt-en-fr"
 
@@ -73,6 +69,10 @@ def translate_text(text: str) -> str:
         skip_special_tokens=True,
     )
 
+################################### PARTE 2 ###################################
+# ------------------------------------------------------------------------------
+# Questão 1
+# ------------------------------------------------------------------------------
 # Função para executar FakeLLM simples
 question_response = {
     "Olá. Tudo bem?": "Oie. Tudo bem sim. E contigo?",
@@ -91,6 +91,9 @@ def simple_fakeLLM(text: str) -> str:
     resposta = fake_llm.invoke(text)
     return resposta
 
+# ------------------------------------------------------------------------------
+# Questão 2
+# ------------------------------------------------------------------------------
 # Função tradutor usando Gpt e LangChain
 load_dotenv()
 
@@ -114,3 +117,21 @@ def translate_openai(text: str) -> str:
 
   resposta = chain.invoke({"text": text})
   return resposta.content
+
+# ------------------------------------------------------------------------------
+# Questão 3
+# ------------------------------------------------------------------------------
+# Função tradutor Helsinki
+modelo_helsinki = pipeline(
+    task="translation",
+    model="Helsinki-NLP/opus-mt-en-de",
+)
+
+def translate_helsinki(text: str) -> str:
+    resposta = modelo_helsinki(
+        text,
+        do_sample=False,
+        max_new_tokens=256,
+    )
+
+    return resposta[0]["translation_text"]
